@@ -23,6 +23,12 @@
         />
     -->
 
+    <adapter
+        provides=".datasources.CmdSnmpMemDataSource.ICmdSnmpMemDataSourceInfo"
+        for=".datasources.CmdSnmpMemDataSource.CmdSnmpMemDataSource"
+        factory=".datasources.CmdSnmpMemDataSource.CmdSnmpMemDataSourceInfo"
+        />
+
 
     <!-- Event Plugins
 

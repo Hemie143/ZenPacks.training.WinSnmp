@@ -108,9 +108,9 @@ class CmdSnmpMemPlugin(PythonDataSourcePlugin):
 
         Classmethod executed by zenhub. Datasource and context arguments are full objects
 
-         Default implementation. Split config id by device, cycletime, template id, datasource id and plugin class
+        Default implementation. Split config id by device, cycletime, template id, datasource id and plugin class
 
-         Optional
+        Optional
         """
 
         log.debug('In config_key context.device().id is {} \
@@ -134,8 +134,10 @@ class CmdSnmpMemPlugin(PythonDataSourcePlugin):
         scope includes dmd object database and context's attributes and methods
         """
 
-        params = {}
-        params['snmpVer'] = datasource. talesEval(datasource.snmpVer, context)
+        params = dict()
+        # Those attributes are collected from datasource. However, the proxy_attributes fetches them from the device
+        # This is not necessary, and only present for an educational purpose
+        params['snmpVer'] = datasource.talesEval(datasource.snmpVer, context)
         params['snmpCommunity'] = datasource.talesEval(datasource.snmpCommunity, context)
 
         # Get path to executable file, starting from datasources to ../libexec
@@ -174,8 +176,15 @@ class CmdSnmpMemPlugin(PythonDataSourcePlugin):
         :param config:
         :return: a Twisted deferred
         """
-        log.debug(' config is %s \n ' % (config))      ######################################################################
-        log.debug(' config.datasources is %s \n ' % (config.datasources))   #################################################
+        log.debug(
+            ' config is %s \n ' % (config))  # #####################################################################
+        log.debug(
+            ' config.datasources is %s \n ' % (config.datasources))  # ################################################
+
+        # Which object is config ?
+        # What are the attributes ?
+        # Multiple datasources ?
+        # Why take the first datasource ?
 
         ds0 = config.datasources[0]
         cmd = ds0.params['cmd']
@@ -196,7 +205,7 @@ class CmdSnmpMemPlugin(PythonDataSourcePlugin):
     def onSuccess(self, result, config):
         log.debug('In success - result is {} and config is {}'.format(result, config))
 
-        data = self.new_data()      # Check what this does ########################################################################
+        data = self.new_data()  # Provides an empty data structure for the output
         log.debug('In success - data is {} '.format(data))
 
         dataVarVals = result.split('|')[1].split()
@@ -224,7 +233,7 @@ class CmdSnmpMemPlugin(PythonDataSourcePlugin):
     def onError(self, result, config):
         log.debug(' In onError - result is {} and config is {}'.format(result, config))
         return {
-            'events': [{}
+            'events': [{
                 'summary': 'Error getting Snmp memory data with zenpython: {}'.format(result),
                 'eventKey': 'PythonCmdSnmpMem',
                 'severity': 4,
